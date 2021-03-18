@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Agendamento.Data;
 using Agendamento.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace Agendamento.Controllers
     {
         [HttpGet]
         [Route("date")]
+        [Authorize]
         public async Task<ActionResult<List<Schedule>>> GetDate([FromBody] Schedule model, [FromServices] DataContext context)
         {
             var Schedules = await context.Schedules.AsNoTracking().Include(P => P.Procedure).Include(C => C.Client).Where(s => s.DateSchedule == model.DateSchedule).ToListAsync();
@@ -22,6 +24,7 @@ namespace Agendamento.Controllers
 
         [HttpGet]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<List<Schedule>>> Get([FromServices] DataContext context)
         {
             try
@@ -37,6 +40,7 @@ namespace Agendamento.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<Schedule>> GetById(int id, [FromServices] DataContext context)
         {
             try
@@ -56,6 +60,7 @@ namespace Agendamento.Controllers
 
         [HttpPost]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<Schedule>> Post([FromBody] Schedule model, [FromServices] DataContext context)
         {
             if (!ModelState.IsValid)
@@ -75,6 +80,7 @@ namespace Agendamento.Controllers
 
         [HttpPut]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<Schedule>> Put([FromBody] Schedule model, [FromServices] DataContext context)
         {
             try
@@ -97,6 +103,7 @@ namespace Agendamento.Controllers
 
         [HttpDelete]
         [Route("id:int")]
+        [Authorize]
         public async Task<ActionResult<Schedule>> Delete(int id, [FromServices] DataContext context)
         {
             try

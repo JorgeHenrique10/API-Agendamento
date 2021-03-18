@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Agendamento.Data;
 using Agendamento.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace Agendamento.Controllers
     {
         [HttpGet]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<List<Procedure>>> Get([FromServices] DataContext context)
         {
             try
@@ -29,6 +31,7 @@ namespace Agendamento.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<Procedure>> GetById(int id, [FromServices] DataContext context)
         {
             try
@@ -48,6 +51,7 @@ namespace Agendamento.Controllers
 
         [HttpPost]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<Procedure>> Post([FromBody] Procedure model, [FromServices] DataContext context)
         {
             if (!ModelState.IsValid)
@@ -67,6 +71,7 @@ namespace Agendamento.Controllers
 
         [HttpPut]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<Procedure>> Put([FromBody] Procedure model, [FromServices] DataContext context)
         {
             try
@@ -89,6 +94,7 @@ namespace Agendamento.Controllers
 
         [HttpDelete]
         [Route("id:int")]
+        [Authorize]
         public async Task<ActionResult<Procedure>> Delete(int id, [FromServices] DataContext context)
         {
             try

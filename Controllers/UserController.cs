@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Agendamento.Data;
 using Agendamento.Models;
+using Agendamento.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Agendamento.Controllers
 {
@@ -13,7 +15,39 @@ namespace Agendamento.Controllers
     public class UsersController : ControllerBase
     {
         [HttpGet]
+        [Route("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult<User>> GetLogin([FromBody] User model, [FromServices] DataContext context)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var Object = await context.Users.Where(u => u.UserName == model.UserName && u.Password == model.Password).FirstOrDefaultAsync();
+
+                if (Object == null)
+                    return NotFound(new { message = "Usuario não encontrado!" });
+
+                var Token = TokenService.GenerateToken(Object);
+
+                Object.Password = "";
+
+                return Ok(new
+                {
+                    user = Object,
+                    token = Token
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<List<User>>> Get([FromServices] DataContext context)
         {
             try
@@ -29,6 +63,7 @@ namespace Agendamento.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<User>> GetById(int id, [FromServices] DataContext context)
         {
             try
@@ -48,6 +83,7 @@ namespace Agendamento.Controllers
 
         [HttpPost]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<User>> Post([FromBody] User model, [FromServices] DataContext context)
         {
             if (!ModelState.IsValid)
@@ -67,6 +103,7 @@ namespace Agendamento.Controllers
 
         [HttpPut]
         [Route("")]
+        [Authorize]
         public async Task<ActionResult<User>> Put([FromBody] User model, [FromServices] DataContext context)
         {
             try
@@ -89,6 +126,7 @@ namespace Agendamento.Controllers
 
         [HttpDelete]
         [Route("id:int")]
+        [Authorize]
         public async Task<ActionResult<User>> Delete(int id, [FromServices] DataContext context)
         {
             try
